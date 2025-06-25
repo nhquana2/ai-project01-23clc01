@@ -1,6 +1,7 @@
 from typing import Protocol, Tuple, List
 from definition.board import Board
 
+# Notice: This is a PROTOCOL 
 class Solver(Protocol):
     """
     Solver interface. Each algorithm implements this.
@@ -10,6 +11,6 @@ class Solver(Protocol):
         Finds a solution.
         Returns:
             - path: list of (vehicle_id, displacement) moves from start to goal
-            - metrics: dict with keys like 'time', 'nodes_expanded', 'max_frontier_size' (group will decide later)
+            - metrics: dict with keys like 'search_time', 'nodes_expanded', 'memory_usage' (group will decide later)
         """
         ...

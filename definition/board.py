@@ -1,17 +1,29 @@
 from typing import List, Tuple, Dict
 
 class Board:
+    BOARD_WIDTH = 6 # Fixed board width 
+    BOARD_HEIGHT = 6 # Fixed board height
     """
     Represents a STATE of the game board for Rush Hour.
     Attributes:
     - vehicles: Dict[id, Vehicle]   # mapping vehicle IDs to Vehicle objects
-    - size: int                     # board width/height (square), in our project, fixed = 6
+    - occupied: List[List]          # Occupied matrix, storing vehicle IDs, for fast look-up -> save time 
     """
 
-    def __init__(self, vehicles: dict, size: int = 6):
+    def __init__(self, vehicles: dict):
         self.vehicles = vehicles
-        self.size = size
-    
+        self.occupied = [[None for _ in range(self.BOARD_WIDTH)] for _ in range(self.BOARD_HEIGHT)]
+        for vehicle_id, vehicle in self.vehicles.items():
+            for x, y in vehicle.get_coordinates():
+                if self.occupied[x][y] is not None:
+                    raise ValueError(f"Vehicles collision detected")
+                self.occupied[x][y] = vehicle_id
+
+    # ATTENTION !! All these below method, please check using occupied matrix and also remember to update the vehicle's coordinates. @nhquan
+
+    def get_occupied(self) -> List[List]:
+        return self.occupied
+
     def get_valid_moves(self) -> List[Tuple[id, int]]:
         """
         Generates all valid moves.
@@ -41,10 +53,12 @@ class Board:
         """
         Returns a hash of the Board state (for checking reached states).
         """
+        # To-do
         raise NotImplementedError
     
     def __eq__(self, other):
         """
         Checks if two Board states are the same.
         """
+        # To-do
         raise NotImplementedError
