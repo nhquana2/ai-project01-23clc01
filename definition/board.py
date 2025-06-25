@@ -89,12 +89,16 @@ class Board:
         """
         Returns a hash of the Board state (for checking reached states).
         """
-        # To-do
-        raise NotImplementedError
+        # Hash can not be executed on mutuable structure (List) -> convert to tuple
+        # Boards with the same layout have the same hash
+        # When considering Board as sets or a key in a dictionary, Python process two step (1. Hash-based bucket, 2. Equality check). In short, Python does not provide efficient hash function for custom objects
+        # -> If boards have the same layout, but different hash (in different bucket), Python will not consider them as the same board -> infinite loop
+        return hash(tuple(tuple(row) for row in self.occupied))
     
     def __eq__(self, other):
         """
         Checks if two Board states are the same.
         """
-        # To-do
-        raise NotImplementedError
+        if not isinstance(other, Board):
+            return False
+        return self.occupied == other.occupied
