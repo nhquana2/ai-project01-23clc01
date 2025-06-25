@@ -80,8 +80,10 @@ class Board:
         Checks if the current Board state is a goal state.
         A goal state is defined as the FIXED RED vehicle being in the exit position. (see FAQ Nguyen Thanh Tinh)
         """
-        # To-do
-        raise NotImplementedError
+        exit_row = 2
+        exit_col = self.BOARD_WIDTH - 1
+
+        return self.occupied[exit_row][exit_col] == 0 #0 is the ID of the red vehicle
     
     def __hash__(self):
         """
