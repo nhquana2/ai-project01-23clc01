@@ -14,7 +14,9 @@ def main():
     vehicle3 = Vehicle(length=2, orientation='H', row=5, col = 4)
     print(vehicle.get_coordinates())
     # Test Board
-    board = Board(vehicles={4: vehicle, 1: vehicle2, 3: vehicle3})
+    board = Board(vehicles={4: vehicle, 1: vehicle2})
     pretty_print(board.get_occupied())
-
+    print(board.get_valid_moves())
+    board_new = board.apply_move(4, -1)
+    pretty_print(board_new.get_occupied())
 main()
