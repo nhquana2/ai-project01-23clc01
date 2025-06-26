@@ -21,10 +21,10 @@ class Vehicle:
             raise ValueError("Length must be 2 or 3")
         if row < 0 or row >= self.BOARD_HEIGHT or col < 0 or col >= self.BOARD_WIDTH:
             raise ValueError("Row and column must be within the grid")
-        if orientation == 'H' and col - length + 1 < 0:
-            raise ValueError("Horizontal vehicle cannot extend beyond the left edge of the board")
-        if orientation == 'V' and row - length + 1 < 0:
-            raise ValueError("Vertical vehicle cannot extend beyond the top edge of the board")
+        if orientation == 'H' and col + length - 1 >= self.BOARD_WIDTH:
+            raise ValueError("Horizontal vehicle cannot extend beyond the right edge of the board")
+        if orientation == 'V' and row + length - 1 >= self.BOARD_HEIGHT:
+            raise ValueError("Vertical vehicle cannot extend beyond the bottom edge of the board")
 
         self.length = length
         self.orientation = orientation
@@ -37,8 +37,8 @@ class Vehicle:
         Each coordinate is a tuple (row, col).
         """
         if self.orientation == 'H':
-            return [(self.row, self.col - i) for i in range(self.length)]
+            return [(self.row, self.col + i) for i in range(self.length)]
         else:
-            return [(self.row - i, self.col) for i in range(self.length)]
+            return [(self.row + i, self.col) for i in range(self.length)]
         
         
