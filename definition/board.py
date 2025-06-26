@@ -67,8 +67,19 @@ class Board:
         vehicle_id: ID of the vehicle to move.
         displacement: Number of cells to move the vehicle (positive for right/down, negative for left/up).
         """
-        board = copy.deepcopy(self)
-        vehicle = board.vehicles[vehicle_id]
+
+        board = Board.__new__(Board) # This won't call __init__
+        board.vehicles = self.vehicles.copy() # Shallow copy vehicles
+        board.occupied = [row[:] for row in self.occupied] # Shallow copy, row[:] is a copy of the row (int, None are immutable)
+        # Group members, remember to research on shallow copy and deep copy
+
+        vehicle = Vehicle(
+            length=self.vehicles[vehicle_id].length,
+            orientation=self.vehicles[vehicle_id].orientation,
+            row=self.vehicles[vehicle_id].row,
+            col=self.vehicles[vehicle_id].col 
+        ) # Construct this and assign to board.vehicles[vehicle_id] later
+
         if vehicle.orientation == 'H':
             old_row, old_col = vehicle.row, vehicle.col
             if displacement == 1:
@@ -91,6 +102,8 @@ class Board:
                 board.occupied[old_row + vehicle.length - 1][old_col] = None
                 board.occupied[old_row - 1][old_col] = vehicle_id
             vehicle.row += displacement
+
+        board.vehicles[vehicle_id] = vehicle # Remember assigning back!!
 
         return board
     
