@@ -1,0 +1,30 @@
+[
+  {
+    "id": 0,          
+    "length": 2,
+    "orientation": "H",
+    "row": 2,
+    "col": 1
+  },
+  {
+    "id": 1,          
+    "length": 3,
+    "orientation": "V",
+    "row": 2,
+    "col": 3
+  },
+  {
+    "id": 2,          
+    "length": 2,
+    "orientation": "H",
+    "row": 5,
+    "col": 2
+  },
+  {
+    "id": 3,
+    "length": 2,
+    "orientation": "V",
+    "row": 4,
+    "col": 5
+  }
+]

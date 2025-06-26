@@ -87,12 +87,20 @@ class Board:
         """
         Returns a hash of the Board state (for checking reached states).
         """
-        # To-do
-        raise NotImplementedError
+        return hash(tuple(tuple(row) for row in self.occupied))
     
     def __eq__(self, other):
         """
         Checks if two Board states are the same.
         """
-        # To-do
-        raise NotImplementedError
+        if not isinstance(other, Board):
+            return False
+        return self.occupied == other.occupied        
+    
+    def display_state(self):
+        """
+        Prints the Board state.
+        """
+        for row in self.occupied:
+            print(' '.join(str(cell) if cell is not None else '.' for cell in row))
+        print()
