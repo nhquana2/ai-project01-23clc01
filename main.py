@@ -17,6 +17,8 @@ def main():
     board = Board(vehicles={4: vehicle, 1: vehicle2})
     pretty_print(board.get_occupied())
     print(board.get_valid_moves())
-    board_new = board.apply_move(4, -1)
+    board_new = board.apply_move(1, -1)
     pretty_print(board_new.get_occupied())
+    #print(board_new.get_valid_moves())
+
 main()

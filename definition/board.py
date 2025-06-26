@@ -1,5 +1,6 @@
 from typing import List, Tuple, Dict
 from definition.vehicle import Vehicle
+import copy
 
 class Board:
     BOARD_WIDTH = 6 # Fixed board width 
@@ -30,30 +31,31 @@ class Board:
         Generates all valid moves.
         Returns a list of (vehicle_id, displacement).
         """
-        moves = [] # List of possible move
+        moves = []
         occupied = self.occupied
         for vehicle_id, vehicle in self.vehicles.items():
-            coords = vehicle.get_coordinates()
+            # compute head and tail positions directly
             if vehicle.orientation == 'H':
-                row = coords[0][0]
-                cols = [c for _, c in coords]
-                leftmost, rightmost = min(cols), max(cols)
-                # move left 
-                if leftmost - 1 >= 0 and occupied[row][leftmost - 1] is None:
+                head_row = vehicle.row
+                head_col = vehicle.col
+                tail_row = head_row
+                tail_col = head_col - vehicle.length + 1
+                # move left
+                if tail_col - 1 >= 0 and occupied[tail_row][tail_col - 1] is None:
                     moves.append((vehicle_id, -1))
-                # move right 
-                print(rightmost)
-                if rightmost + 1 < self.BOARD_WIDTH and occupied[row][rightmost + 1] is None:
+                # move right
+                if head_col + 1 < self.BOARD_WIDTH and occupied[head_row][head_col + 1] is None:
                     moves.append((vehicle_id, 1))
             else:
-                col = coords[0][1]
-                rows = [r for r, _ in coords]
-                topmost, bottommost = min(rows), max(rows)
-                # move up 
-                if topmost - 1 >= 0 and occupied[topmost - 1][col] is None:
+                head_col = vehicle.col
+                head_row = vehicle.row
+                tail_col = head_col
+                tail_row = head_row - vehicle.length + 1
+                # move up
+                if tail_row - 1 >= 0 and occupied[tail_row - 1][tail_col] is None:
                     moves.append((vehicle_id, -1))
-                # move down 
-                if bottommost + 1 < self.BOARD_HEIGHT and occupied[bottommost + 1][col] is None:
+                # move down
+                if head_row + 1 < self.BOARD_HEIGHT and occupied[head_row + 1][head_col] is None:
                     moves.append((vehicle_id, 1))
         return moves
                 
@@ -64,15 +66,13 @@ class Board:
         vehicle_id: ID of the vehicle to move.
         displacement: Number of cells to move the vehicle (positive for right/down, negative for left/up).
         """
-        new_vehicles = {}
-        for vehicle_id, vehicle in self.vehicles.items():
-            new_vehicle = Vehicle(vehicle.length, vehicle.orientation, vehicle.row, vehicle.col) #may implement clone method in Vehicle
-            if vehicle_id == vehicle_id:
-                if new_vehicle.orientation == 'H':
-                    new_vehicle.col += displacement
-                else:
-                    new_vehicle.row += displacement
-            new_vehicles[vehicle_id] = new_vehicle
+        new_vehicles = self.vehicles.copy()
+        moved = copy.copy(new_vehicles[vehicle_id])
+        if moved.orientation == 'H':
+            moved.col += displacement
+        else:
+            moved.row += displacement
+        new_vehicles[vehicle_id] = moved
         return Board(new_vehicles)
     
     def is_goal(self) -> bool:
@@ -80,25 +80,19 @@ class Board:
         Checks if the current Board state is a goal state.
         A goal state is defined as the FIXED RED vehicle being in the exit position. (see FAQ Nguyen Thanh Tinh)
         """
-        exit_row = 2
-        exit_col = self.BOARD_WIDTH - 1
-
-        return self.occupied[exit_row][exit_col] == 0 #0 is the ID of the red vehicle
+        # To-do
+        raise NotImplementedError
     
     def __hash__(self):
         """
         Returns a hash of the Board state (for checking reached states).
         """
-        # Hash can not be executed on mutuable structure (List) -> convert to tuple
-        # Boards with the same layout have the same hash
-        # When considering Board as sets or a key in a dictionary, Python process two step (1. Hash-based bucket, 2. Equality check). In short, Python does not provide efficient hash function for custom objects
-        # -> If boards have the same layout, but different hash (in different bucket), Python will not consider them as the same board -> infinite loop
-        return hash(tuple(tuple(row) for row in self.occupied))
+        # To-do
+        raise NotImplementedError
     
     def __eq__(self, other):
         """
         Checks if two Board states are the same.
         """
-        if not isinstance(other, Board):
-            return False
-        return self.occupied == other.occupied
+        # To-do
+        raise NotImplementedError

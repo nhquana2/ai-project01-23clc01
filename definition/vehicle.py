@@ -40,3 +40,5 @@ class Vehicle:
             return [(self.row, self.col - i) for i in range(self.length)]
         else:
             return [(self.row - i, self.col) for i in range(self.length)]
+        
+        
