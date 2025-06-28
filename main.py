@@ -5,7 +5,7 @@ from solvers.bfs import BFSSolver
 
 def main():
 
-    board = load_map("maps/map2.json")
+    board = load_map("maps/map3.json")
     board.display_state()
     solver = BFSSolver()
     solution, metrics = solver.solve(board)

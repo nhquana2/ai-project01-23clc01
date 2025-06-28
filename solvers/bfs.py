@@ -16,12 +16,11 @@ class BFSSolver(Solver):
         }
 
         start_time = time.time()
-        memory_peak = 0
         tracemalloc.start()
         solution_node, nodes_expanded = self._bfs(initial)
 
-        current, peak = tracemalloc.get_traced_memory()
-        metrics["memory_usage"] = peak / 1024
+        current, memory_peak = tracemalloc.get_traced_memory()
+        metrics["memory_usage"] = memory_peak / 1024
         tracemalloc.stop()
 
         metrics["search_time"] = time.time() - start_time
@@ -55,6 +54,8 @@ class BFSSolver(Solver):
 
     def _get_path(self, node: Node) -> List[Tuple[int, int]]:
         path = []
+        if node is None:
+            return path
         while node.parent is not None:
             path.append(node.action)
             node = node.parent
