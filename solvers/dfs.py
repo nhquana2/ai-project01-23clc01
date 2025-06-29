@@ -17,7 +17,11 @@ class DFSSolver(Solver):
         tracemalloc.start()
         
         self.nodes_expanded = 0
+
+        # initialize the reached set
         self.reached = {initial}
+
+        # start the dfs search
         solution_node = self._dfs(Node(parent=None, state=initial, action=None, path_cost=0))
         
         current, memory_peak = tracemalloc.get_traced_memory()
@@ -35,6 +39,7 @@ class DFSSolver(Solver):
 
         self.nodes_expanded += 1
         
+        # recursive dfs instead of an explicit stack
         for action in node.state.get_valid_moves():
             child_state = node.state.apply_move(action[0], action[1])
             
