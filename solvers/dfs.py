@@ -4,6 +4,7 @@ from definition.board import Board
 from typing import Tuple, List, Dict, Optional, Set
 import time
 import tracemalloc
+import sys
 
 class DFSSolver(Solver):
     def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
@@ -12,6 +13,9 @@ class DFSSolver(Solver):
             "nodes_expanded": 0,
             "memory_usage": 0
         }
+
+        # Increase recursion limit
+        sys.setrecursionlimit(10000)
 
         start_time = time.time()
         tracemalloc.start()

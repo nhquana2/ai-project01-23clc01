@@ -3,21 +3,25 @@ from definition.board import Board
 from maps import load_map
 from solvers.bfs import BFSSolver
 from solvers.ucs import UCSSolver
-from solvers.astar import AStartSolver
+from solvers.dfs import DFSSolver
+from solvers.astar import AStarSolver
 
 def main():
 
-    board = load_map("maps/map3.json")
+    board = load_map("maps/map2.json")
     board.display_state()
-    solver = UCSSolver()
-    #solver = BFSSolver()
-    solution, metrics = solver.solve(board)
-    print(solution)
-    print(len(solution))
-    print(metrics)
+    # solver = UCSSolver()
+    # solver = BFSSolver()
+    # solver = DFSSolver()
+    # solution, metrics = solver.solve(board)
+    # print(solution)
+    # print(len(solution))
+    # print(metrics)
+
+
 
     #solver = UCSSolver()
-    solver = AStartSolver()
+    solver = AStarSolver()
     solution, metrics = solver.solve(board)
     print(solution)
     print(len(solution))
