@@ -69,7 +69,9 @@ class Board:
         """
 
         board = Board.__new__(Board) # This won't call __init__
+
         board.vehicles = self.vehicles.copy() # Shallow copy vehicles
+
         board.occupied = [row[:] for row in self.occupied] # Shallow copy, row[:] is a copy of the row (int, None are immutable)
         # Group members, remember to research on shallow copy and deep copy
 
@@ -138,3 +140,4 @@ class Board:
         for row in self.occupied:
             print(' '.join(str(cell) if cell is not None else '.' for cell in row))
         print()
+        
