@@ -18,14 +18,20 @@ def main():
     # print(len(solution))
     # print(metrics)
 
-
-
-    #solver = UCSSolver()
     solver = AStarSolver()
+    solver2 = UCSSolver()
+
     solution, metrics = solver.solve(board)
+    print("A*")
     print(solution)
     print(len(solution))
     print(metrics)
+
+    print("UCS")
+    solution2, metrics2 = solver2.solve(board)
+    print(solution2)
+    print(len(solution2))
+    print(metrics2)
 
     # board = load_map("maps/map2.json")
 
