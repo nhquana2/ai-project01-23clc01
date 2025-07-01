@@ -5,48 +5,42 @@ from solvers.bfs import BFSSolver
 from solvers.ucs import UCSSolver
 from solvers.dfs import DFSSolver
 from solvers.astar import AStarSolver
+import pygame
+from pathlib import Path
+from gui.menu import Menu
+#from gui.controller import Controller
 
-def main():
-
-    board = load_map("maps/map2.json")
-    board.display_state()
-    # solver = UCSSolver()
-    # solver = BFSSolver()
-    # solver = DFSSolver()
-    # solution, metrics = solver.solve(board)
-    # print(solution)
-    # print(len(solution))
-    # print(metrics)
-
-    solver = AStarSolver()
-    solver2 = UCSSolver()
-
-    solution, metrics = solver.solve(board)
-    print("A*")
-    print(solution)
-    print(len(solution))
-    print(metrics)
-
-    print("UCS")
-    solution2, metrics2 = solver2.solve(board)
-    print(solution2)
-    print(len(solution2))
-    print(metrics2)
-
-    # board = load_map("maps/map2.json")
-
-    # board.display_state()
-
-    # new_board = board.apply_move(1, 1)
-
-    # board.display_state()
-    # new_board.display_state()
-
-    # print(board.vehicles[1])
-    # print(new_board.vehicles[1])
+CONFIG = {
+    "algorithms": {
+        "DFS": DFSSolver(),
+        "BFS": BFSSolver(),
+        "UCS": UCSSolver(),
+        "A*": AStarSolver(),
+    },
+    "maps_dir": Path("maps") 
+}
 
 if __name__ == "__main__":
-    main()
+    pygame.init()
+    screen = pygame.display.set_mode((1280, 720))
+    pygame.display.set_caption("Rush Hour - 23CLC01")
+    clock = pygame.time.Clock()
 
+    menu = Menu(screen, list(CONFIG["algorithms"].keys()), [f.name for f in CONFIG["maps_dir"].glob("*.json")])
+
+    while True:
+        choice = menu.run()
+
+        if choice is None: # User quit
+            break 
+
+        algorithm_name, map_name, speed = choice
+
+        board = load_map(CONFIG['maps_dir'] / map_name)
+        solver = CONFIG["algorithms"][algorithm_name]
+        #controller = Controller(screen, board, solver, speed)
+        #controller.run()
+    
+    pygame.quit()
 
 
