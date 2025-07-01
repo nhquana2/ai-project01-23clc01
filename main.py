@@ -17,7 +17,12 @@ CONFIG = {
         "UCS": UCSSolver(),
         "A*": AStarSolver(),
     },
-    "maps_dir": Path("maps") 
+    "maps_dir": Path("maps"),
+    "speeds": {
+        "Slow": 1,
+        "Medium": 2,
+        "Fast": 3,
+    }
 }
 
 if __name__ == "__main__":
@@ -26,7 +31,7 @@ if __name__ == "__main__":
     pygame.display.set_caption("Rush Hour - 23CLC01")
     clock = pygame.time.Clock()
 
-    menu = Menu(screen, list(CONFIG["algorithms"].keys()), [f.name for f in CONFIG["maps_dir"].glob("*.json")])
+    menu = Menu(screen, list(CONFIG["algorithms"].keys()), [f.name for f in CONFIG["maps_dir"].glob("*.json")], list(CONFIG["speeds"].keys()))
 
     while True:
         choice = menu.run()
