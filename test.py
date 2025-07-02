@@ -7,53 +7,77 @@ from solvers.dfs import DFSSolver
 from solvers.astar import AStarSolver
 from solvers.heuristic import recursive_blocking_heuristic, simple_heuristic
 
+from definition.vehicle import Vehicle
+from definition.board import Board
+from maps import load_map
+from solvers.bfs import BFSSolver
+from solvers.ucs import UCSSolver
+from solvers.dfs import DFSSolver
+from solvers.astar import AStarSolver
+import csv
+from typing import List
+
 def main():
+    maps: List[Board] = []
+    map_names: List[str] = [] 
 
-    board = load_map("maps/map8.json")
-    board.display_state()
-    # solver = UCSSolver()
-    # solver = BFSSolver()
-    # solver = DFSSolver()
-    # solution, metrics = solver.solve(board)
-    # print(solution)
-    # print(len(solution))
-    # print(metrics)
+   
+    for i in range(1, 11):
+        map_name = f"map{i}.json"
+        full_map_path = f"maps/{map_name}" 
+        print(f"Loading {full_map_path}...")
+        maps.append(load_map(full_map_path))
+        map_names.append(map_name)
 
-    solver = AStarSolver(heuristic=simple_heuristic)
-    solver2 = AStarSolver(heuristic=recursive_blocking_heuristic)
-    solver3 = UCSSolver()
+    
+    solvers = [
+        {"name": "BFS", "instance": BFSSolver()},
+        {"name": "DFS", "instance": DFSSolver()},
+        {"name": "UCS", "instance": UCSSolver()},
+        {"name": "A*", "instance": AStarSolver()}
+    ]
 
-    solution, metrics = solver.solve(board)
-    print("A* simple")
-    print(solution)
-    print(len(solution))
-    print(metrics)
+    
+    csv_file_path = "rs_recursive_h.csv"
+    fieldnames = ['map_name','solver_name','solution_length','search_time_sec','nodes_expanded', 'path_cost', 'memory_usage_kb']
 
-    print("A* recursive")
-    solution2, metrics2 = solver2.solve(board)
-    print(solution2)
-    print(len(solution2))
-    print(metrics2)
+    with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader() 
 
-    print("UCS")
-    solution3, metrics3 = solver3.solve(board)
-    print(solution3)
-    print(len(solution3))
-    print(metrics3)
+        for num, board_map in enumerate(maps):
+            current_map_name = map_names[num] 
+            
 
-    # board = load_map("maps/map2.json")
+            for solver_info in solvers:
+                solver_name = solver_info["name"]
+                solver_instance = solver_info["instance"]
 
-    # board.display_state()
+                solution, metrics = solver_instance.solve(board_map)
 
-    # new_board = board.apply_move(1, 1)
+                solution_length = len(solution) if solution is not None else 0 
 
-    # board.display_state()
-    # new_board.display_state()
 
-    # print(board.vehicles[1])
-    # print(new_board.vehicles[1])
+                row_data = {
+                    'map_name': current_map_name,
+                    'solver_name': solver_name,
+                    'solution_length': solution_length,
+                    'search_time_sec': metrics.get('search_time', 'N/A'),
+                    'nodes_expanded': metrics.get('nodes_expanded', 'N/A'),
+                    'path_cost': metrics.get('path_cost', 'N/A'),
+                    'memory_usage_kb': metrics.get('memory_usage', 'N/A')
+                }
+                writer.writerow(row_data)
+                csvfile.flush() 
+
+    print(f"Results saved to {csv_file_path}")
+
 
 if __name__ == "__main__":
     main()
+
+
+
+
 
 

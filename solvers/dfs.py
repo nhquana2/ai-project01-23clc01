@@ -11,7 +11,8 @@ class DFSSolver(Solver):
         metrics = {
             "search_time": 0,
             "nodes_expanded": 0,
-            "memory_usage": 0
+            "memory_usage": 0,
+            "path_cost": 0
         }
 
         # Increase recursion limit
@@ -34,6 +35,7 @@ class DFSSolver(Solver):
 
         metrics["search_time"] = time.time() - start_time
         metrics["nodes_expanded"] = self.nodes_expanded
+        metrics["path_cost"] = solution_node.path_cost if solution_node else 0
 
         return self._get_path(solution_node), metrics
 
