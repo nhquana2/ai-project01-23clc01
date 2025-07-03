@@ -9,6 +9,11 @@ import pygame
 from pathlib import Path
 from gui.menu import Menu
 #from gui.controller import Controller
+import os
+
+pygame.init()
+screen = pygame.display.set_mode((1280, 720))
+pygame.display.set_caption("Rush Hour - 23CLC01")
 
 CONFIG = {
     "algorithms": {
@@ -18,22 +23,22 @@ CONFIG = {
         "A*": AStarSolver(),
     },
     "maps_dir": Path("maps"),
+    "map_names": [f.name for f in Path("maps").glob("*.json")],
     "speeds": {
         "Slow": 1,
         "Medium": 2,
         "Fast": 3,
-    }
+    },
+    "map_boards": {map_name: load_map("maps/" + map_name) for map_name in [f.name for f in Path("maps").glob("*.json")]},
+    "vehicles_images": {image_name: pygame.image.load("assets/images/vehicles/" + image_name).convert_alpha() for image_name in os.listdir("assets/images/vehicles/")}
 }
 
 if __name__ == "__main__":
-    pygame.init()
-    screen = pygame.display.set_mode((1280, 720))
-    pygame.display.set_caption("Rush Hour - 23CLC01")
-    clock = pygame.time.Clock()
 
-    menu = Menu(screen, list(CONFIG["algorithms"].keys()), [f.name for f in CONFIG["maps_dir"].glob("*.json")], list(CONFIG["speeds"].keys()))
+    menu = Menu(screen, list(CONFIG["algorithms"].keys()), CONFIG["map_names"], list(CONFIG["speeds"].keys()), CONFIG["map_boards"], CONFIG["vehicles_images"])
 
     while True:
+
         choice = menu.run()
 
         if choice is None: # User quit

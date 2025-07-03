@@ -31,3 +31,55 @@ class Selector:
                 self.selected = self.items[(self.items.index(self.selected) - 1) % len(self.items)]
             elif self.next_button_rect.collidepoint(event.pos):
                 self.selected = self.items[(self.items.index(self.selected) + 1) % len(self.items)]
+
+class BoardDrawer:
+    def __init__(self, board, images):
+        self.board = board
+        self.images = images
+    
+    def draw(self, surface):
+        color_car, max_color_car = 1, 6
+        color_truck, max_color_truck = 1, 4
+
+        for vehicle_id, vehicle in self.board.vehicles.items():
+            blitting_pos = self._get_blitting_pos(vehicle)
+            if vehicle_id == 0:
+                vehicle_image = self._get_vehicle_image(vehicle, 0, color_truck)
+            else:
+                vehicle_image = self._get_vehicle_image(vehicle, color_car, color_truck)
+
+            surface.blit(vehicle_image, blitting_pos)
+
+            if vehicle.length == 2 and vehicle_id != 0:
+                color_car = color_car + 1
+                if color_car > max_color_car:   
+                    color_car = 1
+            elif vehicle.length == 3:
+                color_truck = color_truck + 1
+                if color_truck > max_color_truck:
+                    color_truck = 1
+
+    def _get_blitting_pos(self, vehicle):
+        START_POS = (74, 106) # (0, 0) blitting position on the screen
+        return (START_POS[0] + vehicle.col * 96, START_POS[1] + vehicle.row * 96)
+
+    def _get_vehicle_image(self, vehicle, color_car, color_truck):
+        image_name = ""
+
+        if vehicle.length == 2:
+            image_name = "car" + str(color_car) + ".png"
+        else:
+            image_name = "truck" + str(color_truck) + ".png"
+    
+        image = self.images[image_name]
+        
+        if vehicle.length == 2:
+            image = pygame.transform.smoothscale(image, (83, 179))
+        else:
+            image = pygame.transform.smoothscale(image, (83, 275))
+        
+        if vehicle.orientation == "H":
+            image = pygame.transform.rotate(image, -90)
+
+        return image
+
