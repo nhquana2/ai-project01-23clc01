@@ -9,9 +9,9 @@ import sys
 class DFSSolver(Solver):
     def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
         metrics = {
-            "search_time": 0,
+            "search_time": 0.0,
             "nodes_expanded": 0,
-            "memory_usage": 0,
+            "memory_usage": 0.0,
             "path_cost": 0
         }
 
@@ -58,7 +58,7 @@ class DFSSolver(Solver):
                     
         return None
 
-    def _get_path(self, node: Node) -> List[Tuple[int, int]]:
+    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
         path = []
         if node is None:
             return path

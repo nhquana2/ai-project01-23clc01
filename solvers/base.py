@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class Node:
     state: Board
-    action: Tuple[int, int] # (vehicle_id, displacement)
+    action: Tuple[int, int] | None # (vehicle_id, displacement)
     parent: Optional["Node"] = None
     path_cost: int = 0
 

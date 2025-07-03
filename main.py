@@ -10,6 +10,7 @@ from pathlib import Path
 from gui.menu import Menu
 #from gui.controller import Controller
 import os
+from typing import Tuple
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -39,7 +40,7 @@ if __name__ == "__main__":
 
     while True:
 
-        choice = menu.run()
+        choice: Tuple[str, str, str] | None = menu.run()
 
         if choice is None: # User quit
             break 

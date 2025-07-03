@@ -7,17 +7,20 @@ class Board:
     """
     Represents a STATE of the game board for Rush Hour.
     Attributes:
-    - vehicles: Dict[id, Vehicle]   # mapping vehicle IDs to Vehicle objects
-    - occupied: List[List]          # Occupied matrix, storing vehicle IDs, for fast look-up -> save time 
+    - vehicles: Dict[int, Vehicle]   # mapping vehicle IDs to Vehicle objects
+    - occupied: List[List[int | None]]          # Occupied matrix, storing vehicle IDs, for fast look-up -> save time 
     """
 
     BOARD_WIDTH = 6 # Fixed board width 
     BOARD_HEIGHT = 6 # Fixed board height
     TARGET_VEHICLE_ID = 0 # ID of the red vehicle, fixed by default (see FAQ Nguyen Thanh Tinh)
+    EXIT_ROW = 2
+    EXIT_COL = BOARD_WIDTH - 1
 
     def __init__(self, vehicles: dict):
         self.vehicles = vehicles
-        self.occupied = [[None for _ in range(self.BOARD_WIDTH)] for _ in range(self.BOARD_HEIGHT)]
+        self.occupied: List[List[int | None]] = [[None for _ in range(self.BOARD_WIDTH)] for _ in range(self.BOARD_HEIGHT)]
+        
         for vehicle_id, vehicle in self.vehicles.items():
             for x, y in vehicle.get_coordinates():
                 if self.occupied[x][y] is not None:
@@ -26,10 +29,10 @@ class Board:
 
     # ATTENTION !! All these below method, please check using occupied matrix and also remember to update the vehicle's coordinates. @nhquan
 
-    def get_occupied(self) -> List[List]:
+    def get_occupied(self) -> List[List[int | None]]:
         return self.occupied
 
-    def get_valid_moves(self) -> List[Tuple[id, int]]:
+    def get_valid_moves(self) -> List[Tuple[int, int]]:
         """
         Generates all valid moves.
         Returns a list of (vehicle_id, displacement).
@@ -114,10 +117,7 @@ class Board:
         Checks if the current Board state is a goal state.
         A goal state is defined as the FIXED RED vehicle being in the exit position. (see FAQ Nguyen Thanh Tinh)
         """
-        exit_row = 2
-        exit_col = self.BOARD_WIDTH - 1
-
-        return self.occupied[exit_row][exit_col] == self.TARGET_VEHICLE_ID
+        return self.occupied[self.EXIT_ROW][self.EXIT_COL] == self.TARGET_VEHICLE_ID
     
     def __hash__(self):
         """

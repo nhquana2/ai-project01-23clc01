@@ -10,9 +10,9 @@ class BFSSolver(Solver):
     def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
 
         metrics = {
-            "search_time": 0,
+            "search_time": 0.0,
             "nodes_expanded": 0,
-            "memory_usage": 0,
+            "memory_usage": 0.0,
             "path_cost": 0
         }
 
@@ -54,7 +54,7 @@ class BFSSolver(Solver):
                     frontier.append(child_node)
         return None, nodes_expanded
 
-    def _get_path(self, node: Node) -> List[Tuple[int, int]]:
+    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
         path = []
         if node is None:
             return path
