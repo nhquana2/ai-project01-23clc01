@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     while True:
 
-        choice: Tuple[str, str, str] | None = menu.run()
+        choice: Tuple | None = menu.run()
 
         if choice is None: # User quit
             break 
@@ -49,6 +49,7 @@ if __name__ == "__main__":
 
         board = load_map(CONFIG['maps_dir'] / map_name)
         solver = CONFIG["algorithms"][algorithm_name]
+
         #controller = Controller(screen, board, solver, speed)
         #controller.run()
     

@@ -10,13 +10,13 @@ class Selector:
     def __init__(self, items, pos):
         self.items = items
         self.pos = pos
-        self.selected = items[0] if items else None
+        self.selected: str | None = items[0] if items else None
 
-        self.prev_button = pygame.image.load("assets/images/prev_button.png")
+        self.prev_button = pygame.image.load("assets/images/buttons/prev_button.png")
         self.prev_button = pygame.transform.scale(self.prev_button, (60, 60))
         self.prev_button_rect = self.prev_button.get_rect(center=(self.pos[0] - 160, self.pos[1]))
 
-        self.next_button = pygame.image.load("assets/images/next_button.png").convert_alpha()
+        self.next_button = pygame.image.load("assets/images/buttons/next_button.png").convert_alpha()
         self.next_button = pygame.transform.scale(self.next_button, (60, 60))
         self.next_button_rect = self.next_button.get_rect(center=(self.pos[0] + 160, self.pos[1]))
 
@@ -31,6 +31,24 @@ class Selector:
                 self.selected = self.items[(self.items.index(self.selected) - 1) % len(self.items)]
             elif self.next_button_rect.collidepoint(event.pos):
                 self.selected = self.items[(self.items.index(self.selected) + 1) % len(self.items)]
+
+class Button:
+    def __init__(self, image, text, pos):
+        self.image = image
+        self.image = pygame.transform.smoothscale(self.image, (258, 74))
+        self.text = text
+        self.pos = pos
+        self.rect = self.image.get_rect(center=pos)
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+        draw_text(surface, self.text, (self.pos[0], self.pos[1] - 8), 24, color=(255, 255, 255))
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                return True
+        return False
 
 class BoardDrawer:
     def __init__(self, board, images):
