@@ -5,7 +5,7 @@ from solvers.bfs import BFSSolver
 from solvers.ucs import UCSSolver
 from solvers.dfs import DFSSolver
 from solvers.astar import AStarSolver
-from solvers.heuristic import recursive_blocking_heuristic, simple_heuristic
+from solvers.heuristic import recursive_blocking_heuristic, simple_heuristic, advanced_heuristic, custom_heuristic
 
 from definition.vehicle import Vehicle
 from definition.board import Board
@@ -31,14 +31,14 @@ def main():
 
     
     solvers = [
-        {"name": "BFS", "instance": BFSSolver()},
-        {"name": "DFS", "instance": DFSSolver()},
-        {"name": "UCS", "instance": UCSSolver()},
-        {"name": "A*", "instance": AStarSolver()}
+        # {"name": "BFS", "instance": BFSSolver()},
+        # {"name": "DFS", "instance": DFSSolver()},
+        # {"name": "UCS", "instance": UCSSolver()},
+        {"name": "A*", "instance": AStarSolver(heuristic=advanced_heuristic)}
     ]
 
     
-    csv_file_path = "rs_recursive_h.csv"
+    csv_file_path = "custom_h1.csv"
     fieldnames = ['map_name','solver_name','solution_length','search_time_sec','nodes_expanded', 'path_cost', 'memory_usage_kb']
 
     with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:

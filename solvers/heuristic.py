@@ -30,6 +30,106 @@ def simple_heuristic(state: Board) -> int:
     # print(f"blocking_cost in h: {blocking_cost}")
     return direct_distance + blocking_cost
 
+def custom_heuristic(state: Board) -> int:
+    # --- Direct distance component ---------------------------------------
+    target_vehicle = state.vehicles[state.TARGET_VEHICLE_ID]
+    target_row = 2                      # Exit row (fixed)
+    target_col = state.BOARD_WIDTH - 1  # Exit column
+
+    right_pos = target_vehicle.col + target_vehicle.length - 1
+    direct_distance = target_col - right_pos
+
+    # --- Blocking cost component -----------------------------------------
+    blocking_cost = 0
+    for col in range(right_pos + 1, target_col + 1):
+        blocker_id = state.occupied[target_row][col]
+        if blocker_id is not None:
+            if state.vehicles[blocker_id].orientation == 'V':
+                if state.vehicles[blocker_id].length == 2:
+                    blocking_cost += 2
+                    head_blocker = state.vehicles[blocker_id].row
+                    tail_blocker = state.vehicles[blocker_id].row + state.vehicles[blocker_id].length - 1
+                    if state.occupied[head_blocker - 1][col] is not None:
+                        blocking_cost += state.vehicles[state.occupied[head_blocker - 1][col]].length
+                    if state.occupied[tail_blocker + 1][col] is not None:
+                        blocking_cost += state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                else:
+                    head_blocker = state.vehicles[blocker_id].row
+                    tail_blocker = state.vehicles[blocker_id].row + state.vehicles[blocker_id].length - 1
+                    target_blocker_row = 3
+                    blocking_cost += 3 * (target_blocker_row - head_blocker)
+                    if state.occupied[tail_blocker + 1][col] is not None:
+                        blocking_cost += state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                    if state.occupied[head_blocker - 1][col] is not None:
+                        blocking_cost += state.vehicles[state.occupied[head_blocker - 1][col]].length
+            else:
+                return 0
+    return direct_distance + blocking_cost 
+
+def advanced_heuristic(state: Board) -> int:
+    """
+    Advanced heuristic that counts the number of blocking vehicles and their lengths.
+    """
+    # Target vehicle (red car)
+    target_vehicle = state.vehicles[state.TARGET_VEHICLE_ID]
+        
+    # Calculate direct distance to exit
+    target_row = 2  # Fixed exit row defined in Board
+    target_col = state.BOARD_WIDTH - 1  # Exit column
+        
+    # Distance from target vehicle's rightmost position to exit
+    right_pos = target_vehicle.col + target_vehicle.length - 1
+    direct_distance = target_col - right_pos
+    
+    # Sum lengths of blocking vehicles
+    blocking_cost = 0
+    for col in range(right_pos + 1, target_col + 1):
+        blocker_id = state.occupied[target_row][col]
+        if blocker_id is not None:
+            if state.vehicles[blocker_id].orientation == 'V':
+                if state.vehicles[blocker_id].length == 2: # case length of blocking car = 2
+                    blocking_cost += 2
+                    head_blocker = state.vehicles[blocker_id].row
+                    tail_blocker = state.vehicles[blocker_id].row + state.vehicles[blocker_id].length - 1
+                    head_cost = 0
+                    tail_cost = 0
+                    if state.occupied[head_blocker - 1][col] is not None and state.occupied[tail_blocker + 1][col] is not None:
+                        head_cost = state.vehicles[state.occupied[head_blocker - 1][col]].length
+                        tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                        blocking_cost += (head_cost + tail_cost)
+                    elif state.occupied[head_blocker - 1][col] is None and state.occupied[tail_blocker + 1][col] is not None:
+                        tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                        blocking_cost += tail_cost
+                    elif state.occupied[head_blocker - 1][col] is not None and state.occupied[tail_blocker + 1][col] is None:
+                        head_cost = state.vehicles[state.occupied[head_blocker - 1][col]].length
+                        blocking_cost += head_cost
+                    else:
+                        blocking_cost += 0
+
+                else: # case length of blocking car > 3
+                    head_blocker = state.vehicles[blocker_id].row
+                    tail_blocker = state.vehicles[blocker_id].row + state.vehicles[blocker_id].length - 1
+                    target_blocker_row = 3
+                    blocking_cost += 3 * (target_blocker_row - head_blocker)
+                    tail_cost = 0
+                    head_cost = 0
+
+                    if state.occupied[head_blocker - 1][col] is not None and state.occupied[tail_blocker + 1][col] is not None:
+                        head_cost = state.vehicles[state.occupied[head_blocker - 1][col]].length
+                        tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                        blocking_cost += (tail_cost)
+                    elif state.occupied[head_blocker - 1][col] is None and state.occupied[tail_blocker + 1][col] is not None:
+                        tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
+                        blocking_cost += tail_cost
+                    elif state.occupied[head_blocker - 1][col] is not None and state.occupied[tail_blocker + 1][col] is None:
+                        head_cost = state.vehicles[state.occupied[head_blocker - 1][col]].length
+                        blocking_cost += head_cost
+                    else:
+                        blocking_cost += 0
+            else:
+                return 0
+            
+    return direct_distance + blocking_cost
 
 def count_blocking_recursively(state: Board, vehicle_id: int, visited: set) -> int:
     """
@@ -100,7 +200,6 @@ def count_blocking_recursively(state: Board, vehicle_id: int, visited: set) -> i
                     cost += count_blocking_recursively(state, blocker_right, visited)
     
     return cost
-
 
 def recursive_blocking_heuristic(state: Board) -> int:
     """
