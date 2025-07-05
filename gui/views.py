@@ -101,3 +101,29 @@ class BoardDrawer:
 
         return image
 
+class AnimatedBoardDrawer(BoardDrawer):
+    def __init__(self, board, images, anim_vehicle=None, anim_offset=(0,0)):
+        super().__init__(board, images)
+        self.anim_vehicle = anim_vehicle  
+        self.anim_offset = anim_offset
+
+    def draw(self, surface):
+        color_car, max_color_car = 1, 6
+        color_truck, max_color_truck = 1, 4
+        for vehicle_id, vehicle in self.board.vehicles.items():
+            blitting_pos = self._get_blitting_pos(vehicle)
+            if vehicle_id == self.anim_vehicle:
+                blitting_pos = (blitting_pos[0] + self.anim_offset[0], blitting_pos[1] + self.anim_offset[1])
+            if vehicle_id == 0:
+                vehicle_image = self._get_vehicle_image(vehicle, 0, 1)
+            else:
+                vehicle_image = self._get_vehicle_image(vehicle, color_car, color_truck)
+            surface.blit(vehicle_image, blitting_pos)
+            if vehicle.length == 2 and vehicle_id != 0:
+                color_car = color_car + 1
+                if color_car > max_color_car:
+                    color_car = 1
+            elif vehicle.length == 3:
+                color_truck = color_truck + 1
+                if color_truck > max_color_truck:
+                    color_truck = 1

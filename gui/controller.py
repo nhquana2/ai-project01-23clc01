@@ -3,53 +3,7 @@ from gui.views import BoardDrawer, draw_text
 from definition.board import Board
 import time
 from gui.views import Button
-
-class AnimatedBoardDrawer:
-    def __init__(self, board, images, anim_vehicle=None, anim_offset=(0,0)):
-        self.board = board
-        self.images = images
-        self.anim_vehicle = anim_vehicle  
-        self.anim_offset = anim_offset
-
-    def draw(self, surface):
-        color_car, max_color_car = 1, 6
-        color_truck, max_color_truck = 1, 4
-        for vehicle_id, vehicle in self.board.vehicles.items():
-            blitting_pos = self._get_blitting_pos(vehicle)
-            if vehicle_id == self.anim_vehicle:
-                blitting_pos = (blitting_pos[0] + self.anim_offset[0], blitting_pos[1] + self.anim_offset[1])
-            if vehicle_id == 0:
-                vehicle_image = self._get_vehicle_image(vehicle, 0, 1)
-            else:
-                vehicle_image = self._get_vehicle_image(vehicle, color_car, color_truck)
-            surface.blit(vehicle_image, blitting_pos)
-            if vehicle.length == 2 and vehicle_id != 0:
-                color_car = color_car + 1
-                if color_car > max_color_car:
-                    color_car = 1
-            elif vehicle.length == 3:
-                color_truck = color_truck + 1
-                if color_truck > max_color_truck:
-                    color_truck = 1
-
-    def _get_blitting_pos(self, vehicle):
-        START_POS = (74, 106)
-        return (START_POS[0] + vehicle.col * 96, START_POS[1] + vehicle.row * 96)
-
-    def _get_vehicle_image(self, vehicle, color_car, color_truck):
-        image_name = ""
-        if vehicle.length == 2:
-            image_name = "car" + str(color_car) + ".png"
-        else:
-            image_name = "truck" + str(color_truck) + ".png"
-        image = self.images[image_name]
-        if vehicle.length == 2:
-            image = pygame.transform.smoothscale(image, (83, 179))
-        else:
-            image = pygame.transform.smoothscale(image, (83, 275))
-        if vehicle.orientation == "H":
-            image = pygame.transform.rotate(image, -90)
-        return image
+from gui.views import AnimatedBoardDrawer
 
 class Controller:
     def __init__(
@@ -77,14 +31,17 @@ class Controller:
 
     def draw_menu_ui(self):
         self.screen.blit(self.background, (0, 0))
-        #pause button
         
     def run(self):
-        for i in range(1, len(self.states)):
-            
+        i = 1
+        paused = False
+        while True:
+            if i >= len(self.states):
+                break
             prev_board = self.states[i-1]
             next_board = self.states[i]
             move = self.solution[i-1]
+            i += 1
             vehicle_id, direction = move
             vehicle = prev_board.vehicles[vehicle_id]
             if vehicle.orientation == 'H':
@@ -106,10 +63,19 @@ class Controller:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
-            self.draw_menu_ui()
-            AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
-            pygame.display.flip()
-            pygame.time.delay(100)
+                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                        paused = not paused
+                while paused:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            return
+                        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                            paused = False
+                    self.clock.tick(10)
+        self.draw_menu_ui()
+        AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
+        pygame.display.flip()
+        pygame.time.delay(100)
         running = True
         while running:
             for event in pygame.event.get():
