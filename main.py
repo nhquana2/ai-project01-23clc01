@@ -8,7 +8,7 @@ from solvers.astar import AStarSolver
 import pygame
 from pathlib import Path
 from gui.menu import Menu
-#from gui.controller import Controller
+from gui.controller import Controller
 import os
 from typing import Tuple
 
@@ -36,23 +36,41 @@ CONFIG = {
 
 if __name__ == "__main__":
 
-    menu = Menu(screen, list(CONFIG["algorithms"].keys()), CONFIG["map_names"], list(CONFIG["speeds"].keys()), CONFIG["map_boards"], CONFIG["vehicles_images"])
+    menu = Menu(
+        screen,
+        list(CONFIG["algorithms"].keys()),
+        CONFIG["map_names"],
+        list(CONFIG["speeds"].keys()),
+        CONFIG["map_boards"],
+        CONFIG["vehicles_images"]
+    )
 
     while True:
-
         choice: Tuple | None = menu.run()
 
-        if choice is None: # User quit
-            break 
+        if choice is None:  # User quit
+            break
 
         algorithm_name, map_name, speed = choice
 
         board = load_map(CONFIG['maps_dir'] / map_name)
         solver = CONFIG["algorithms"][algorithm_name]
 
-        #controller = Controller(screen, board, solver, speed)
-        #controller.run()
-    
+        controller = Controller(
+            screen,
+            board,
+            solver,
+            CONFIG["speeds"][speed],
+            CONFIG["vehicles_images"],
+            menu.algorithms_list,
+            menu.maps_list,
+            menu.speeds_list,
+            CONFIG["map_boards"],
+            menu.start_button,
+            menu.exit_button
+        )
+        controller.run()
+
     pygame.quit()
 
 
