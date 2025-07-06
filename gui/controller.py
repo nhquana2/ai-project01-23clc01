@@ -24,14 +24,23 @@ class Controller:
         self.start_button = start_button
         self.exit_button = exit_button
         self.clock = pygame.time.Clock()
-        self.solution, _ = solver.solve(board)
+        self.solution, self.metrics = solver.solve(board) 
         self.states = [board]
         for move in self.solution:
             self.states.append(self.states[-1].apply_move(*move))
+        self.current_step = 0
+        self.total_steps = len(self.solution)
+        self.current_cost = 0
 
     def draw_menu_ui(self):
         self.screen.blit(self.background, (0, 0))
         
+
+    def draw_static_ui(self):
+        draw_text(self.screen, f" Step: {self.current_step}/{self.total_steps}", (990, 60), font_size=30, color=(0, 0, 0))
+        draw_text(self.screen, f" Cost: {self.current_cost}", (990, 100), font_size=30, color=(0, 0, 0))
+
+ 
     def run(self):
         i = 1
         paused = False
@@ -59,6 +68,7 @@ class Controller:
                 offset[1] += px_per_frame[1]
                 self.draw_menu_ui()
                 AnimatedBoardDrawer(prev_board, self.vehicles_images, anim_vehicle=vehicle_id, anim_offset=tuple(offset)).draw(self.screen)
+                self.draw_static_ui()
                 pygame.display.flip()
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -72,8 +82,23 @@ class Controller:
                         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                             paused = False
                     self.clock.tick(10)
+            self.current_step = i - 1
+            if self.solver.__class__.__name__ in ['DFSSolver', 'BFSSolver']:
+                self.current_cost += 1  
+            else:
+                self.current_cost += vehicle.length
+
+
         self.draw_menu_ui()
         AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
+
+        
+       
+        self.draw_static_ui()
+        draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
+        draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
+        draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0,0,0))
+
         pygame.display.flip()
         pygame.time.delay(100)
         running = True
