@@ -16,7 +16,7 @@ class Controller:
         self.solver = solver
         self.speed = speed  
         self.vehicles_images = vehicles_images
-        self.background = self.background = pygame.image.load("assets/images/background_scaled.jpeg").convert()
+        self.background = pygame.image.load("assets/images/background_scaled.jpeg").convert()
         self.algorithms_list = algorithms_list
         self.maps_list = maps_list
         self.speeds_list = speeds_list
@@ -32,11 +32,10 @@ class Controller:
         self.total_steps = len(self.solution)
         self.current_cost = 0
 
-    def draw_menu_ui(self):
-        self.screen.blit(self.background, (0, 0))
-        
+
 
     def draw_static_ui(self):
+        self.screen.blit(self.background, (0, 0))
         draw_text(self.screen, f" Step: {self.current_step}/{self.total_steps}", (990, 60), font_size=30, color=(0, 0, 0))
         draw_text(self.screen, f" Cost: {self.current_cost}", (990, 100), font_size=30, color=(0, 0, 0))
 
@@ -59,17 +58,21 @@ class Controller:
             else:
                 dx = 0
                 dy = direction * 96
-            steps = 24  
+            if self.speed == 1:      # Slow
+                steps = 24
+            elif self.speed == 2:    # Medium
+                steps = 12
+            else:                    # Fast
+                steps = 6 
             px_per_frame = (dx // steps, dy // steps)
             offset = [0, 0]
             for step in range(steps):
-                self.clock.tick(30 * int(self.speed))  
+                self.clock.tick(30 * int(self.speed))  # Control animation speed
                 offset[0] += px_per_frame[0]
                 offset[1] += px_per_frame[1]
-                self.draw_menu_ui()
+                self.draw_static_ui()  # Draw background and static UI
                 AnimatedBoardDrawer(prev_board, self.vehicles_images, anim_vehicle=vehicle_id, anim_offset=tuple(offset)).draw(self.screen)
-                self.draw_static_ui()
-                pygame.display.flip()
+                pygame.display.flip() # Update the display
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
@@ -82,22 +85,18 @@ class Controller:
                         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                             paused = False
                     self.clock.tick(10)
+            # Update step and cost
             self.current_step = i - 1
             if self.solver.__class__.__name__ in ['DFSSolver', 'BFSSolver']:
                 self.current_cost += 1  
             else:
                 self.current_cost += vehicle.length
-
-
-        self.draw_menu_ui()
-        AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
-
-        
-       
-        self.draw_static_ui()
-        draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
-        draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
-        draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0,0,0))
+            # Draw the final state and metrics after moving
+            self.draw_static_ui()
+            AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
+            draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
+            draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
+            draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0,0,0))
 
         pygame.display.flip()
         pygame.time.delay(100)
