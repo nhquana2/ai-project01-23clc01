@@ -106,7 +106,7 @@ def advanced_heuristic(state: Board) -> int:
                     else:
                         blocking_cost += 0
 
-                else: # case length of blocking car > 3
+                else: # case length of blocking car = 3
                     head_blocker = state.vehicles[blocker_id].row
                     tail_blocker = state.vehicles[blocker_id].row + state.vehicles[blocker_id].length - 1
                     target_blocker_row = 3
@@ -117,7 +117,7 @@ def advanced_heuristic(state: Board) -> int:
                     if state.occupied[head_blocker - 1][col] is not None and state.occupied[tail_blocker + 1][col] is not None:
                         head_cost = state.vehicles[state.occupied[head_blocker - 1][col]].length
                         tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
-                        blocking_cost += (tail_cost)
+                        blocking_cost += (head_cost + tail_cost)
                     elif state.occupied[head_blocker - 1][col] is None and state.occupied[tail_blocker + 1][col] is not None:
                         tail_cost = state.vehicles[state.occupied[tail_blocker + 1][col]].length
                         blocking_cost += tail_cost
