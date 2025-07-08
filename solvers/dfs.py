@@ -13,7 +13,7 @@ class DFSSolver(Solver):
     def _search(self, initial: Board) -> Tuple[Optional[Node], int]:
         """DFS implementation using recursion"""
         self.nodes_expanded = 0
-        self.reached = {initial}
+        self.reached: Set[Board] = {initial}
         
         solution_node = self._dfs_recursive(
             Node(parent=None, state=initial, action=None, path_cost=0)

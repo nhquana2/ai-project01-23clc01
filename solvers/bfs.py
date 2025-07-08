@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from solvers.base import Solver, Node
 from definition.board import Board
-from typing import Tuple, List, Dict, Optional
+from typing import Tuple, List, Dict, Optional, Set
 import time
 from collections import deque
 import tracemalloc
@@ -16,7 +16,7 @@ class BFSSolver(Solver):
             return start_node, 0
 
         frontier = deque([start_node])
-        reached = {initial: start_node}
+        reached: Set[Board] = {initial}
 
         while frontier:
             node = frontier.popleft()
@@ -24,9 +24,12 @@ class BFSSolver(Solver):
             for action in node.state.get_valid_moves():
                 child_state = node.state.apply_move(action[0], action[1])
                 child_node = Node(parent=node, state=child_state, action=action, path_cost=node.path_cost + 1)
+
                 if child_state.is_goal():
                     return child_node, nodes_expanded
+                    
                 if child_state not in reached:
-                    reached[child_state] = child_node
+                    reached.add(child_state)
                     frontier.append(child_node)
+
         return None, nodes_expanded
