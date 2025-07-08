@@ -18,6 +18,30 @@ import csv
 from typing import List
 
 def main():
+       # Load map5
+    map_name = "map11.json"
+    full_map_path = f"maps/{map_name}"
+    print(f"Loading {full_map_path}...")
+    board = load_map(full_map_path)
+
+    # Print the board state using display_state
+    print("Initial board state for map5:")
+    board.display_state()
+
+    # Choose a solver (example: A* with advanced_heuristic)
+    solver = AStarSolver(heuristic=advanced_heuristic)
+    solution, metrics = solver.solve(board)
+
+    # Print the length of the solution
+    print(f"Length of solution: {len(solution) if solution is not None else 0}")
+
+    print("Solution metrics:")
+    for key, value in metrics.items():
+        print(f"{key}: {value}")
+   
+   
+   
+    """
     maps: List[Board] = []
     map_names: List[str] = [] 
 
@@ -71,7 +95,7 @@ def main():
                 csvfile.flush() 
 
     print(f"Results saved to {csv_file_path}")
-
+"""
 
 if __name__ == "__main__":
     main()
