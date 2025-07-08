@@ -53,12 +53,3 @@ class BFSSolver(Solver):
                     reached[child_state] = child_node
                     frontier.append(child_node)
         return None, nodes_expanded
-
-    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
-        path = []
-        if node is None:
-            return path
-        while node.parent is not None:
-            path.append(node.action)
-            node = node.parent
-        return path[::-1]

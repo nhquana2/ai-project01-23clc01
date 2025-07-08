@@ -84,15 +84,3 @@ class AStarSolver(Solver):
                     heapq.heappush(frontier, (new_f_cost, tie_breaker_id, child_node))
 
         return None, nodes_expanded 
-
-    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
-        """
-        Reconstructs the path from the goal node to the initial node.
-        """
-        path = []
-        if node is None:
-            return path
-        while node.parent is not None:
-            path.append(node.action)
-            node = node.parent
-        return path[::-1] 

@@ -75,14 +75,4 @@ class UCSSolver(Solver):
 
 
         return None, nodes_expanded 
-
-    def _get_path(self, node: Node) -> List[Tuple[int, int]]:
-        """
-        Reconstructs the path from the goal node to the initial node.
-        """
-        path = []
-        while node.parent is not None:
-            path.append(node.action)
-            node = node.parent
-        return path[::-1] # Reverse the path to get chronological order
         

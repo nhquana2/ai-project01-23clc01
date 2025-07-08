@@ -57,12 +57,3 @@ class DFSSolver(Solver):
                     return result
                     
         return None
-
-    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
-        path = []
-        if node is None:
-            return path
-        while node.parent is not None:
-            path.append(node.action)
-            node = node.parent
-        return path[::-1]

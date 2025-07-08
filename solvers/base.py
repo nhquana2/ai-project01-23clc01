@@ -1,4 +1,4 @@
-from typing import Protocol, Tuple, List, Optional, Dict, Optional
+from typing import Tuple, List, Optional, Dict, Optional
 from definition.board import Board
 from dataclasses import dataclass
 
@@ -9,8 +9,8 @@ class Node:
     parent: Optional["Node"] = None
     path_cost: int = 0
 
-# Notice: This is a PROTOCOL 
-class Solver(Protocol):
+
+class Solver:
     """
     Solver interface. Each algorithm implements this.
     """
@@ -21,4 +21,16 @@ class Solver(Protocol):
             - path: list of (vehicle_id, displacement) moves from initial to goal state
             - metrics: dict with keys like 'search_time', 'nodes_expanded', 'memory_usage' (group will decide later)
         """
-        ...
+        raise NotImplementedError("Solvers must implement this method")
+
+    def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
+        """
+        Reconstructs the path from the goal node to the initial node.
+        """
+        path = []
+        if node is None:
+            return path
+        while node.parent is not None:
+            path.append(node.action)
+            node = node.parent
+        return path[::-1] 

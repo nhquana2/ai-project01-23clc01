@@ -1,8 +1,8 @@
 from typing import List, Tuple
 
 class Vehicle:
-    BOARD_WIDTH = 6 # Fixed board width 
-    BOARD_HEIGHT = 6 # Fixed board height
+    BOARD_WIDTH = 6    # Fixed board width 
+    BOARD_HEIGHT = 6   # Fixed board height
     
     def __init__(self, length: int, orientation: str, row: int, col: int):
         """
