@@ -1,6 +1,9 @@
 from typing import Tuple, List, Optional, Dict, Optional
 from definition.board import Board
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
+import time
+import tracemalloc
 
 @dataclass
 class Node:
@@ -10,18 +13,40 @@ class Node:
     path_cost: int = 0
 
 
-class Solver:
+class Solver(ABC):
     """
     Solver interface. Each algorithm implements this.
     """
     def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
+
+        metrics = {
+            "search_time": 0.0,
+            "nodes_expanded": 0,
+            "memory_usage": 0.0,
+            "path_cost": 0
+        }
+
+        start_time = time.time()
+        tracemalloc.start()
+        solution_node, nodes_expanded = self._search(initial)
+
+        current, memory_peak = tracemalloc.get_traced_memory()
+        metrics["memory_usage"] = memory_peak / 1024
+        tracemalloc.stop()
+
+        metrics["search_time"] = time.time() - start_time
+        metrics["nodes_expanded"] = nodes_expanded
+        metrics["path_cost"] = solution_node.path_cost if solution_node else 0
+
+        return self._get_path(solution_node), metrics
+
+    @abstractmethod
+    def _search(self, initial: Board) -> Tuple[Optional[Node], int]:
         """
-        Finds a solution.
-        Returns:
-            - path: list of (vehicle_id, displacement) moves from initial to goal state
-            - metrics: dict with keys like 'search_time', 'nodes_expanded', 'memory_usage' (group will decide later)
+        Abstract method that each solver must implement, to execute the search algorithm.
+        Returns: (solution_node, nodes_expanded)
         """
-        raise NotImplementedError("Solvers must implement this method")
+        pass
 
     def _get_path(self, node: Node | None) -> List[Tuple[int, int]]:
         """

@@ -7,30 +7,7 @@ from collections import deque
 import tracemalloc
 
 class BFSSolver(Solver):
-    def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
-
-        metrics = {
-            "search_time": 0.0,
-            "nodes_expanded": 0,
-            "memory_usage": 0.0,
-            "path_cost": 0
-        }
-
-        start_time = time.time()
-        tracemalloc.start()
-        solution_node, nodes_expanded = self._bfs(initial)
-
-        current, memory_peak = tracemalloc.get_traced_memory()
-        metrics["memory_usage"] = memory_peak / 1024
-        tracemalloc.stop()
-
-        metrics["search_time"] = time.time() - start_time
-        metrics["nodes_expanded"] = nodes_expanded
-        metrics["path_cost"] = solution_node.path_cost if solution_node else 0
-
-        return self._get_path(solution_node), metrics
-    
-    def _bfs(self, initial: Board) -> Tuple[Optional[Node], int]:
+    def _search(self, initial: Board) -> Tuple[Optional[Node], int]:
 
         nodes_expanded = 0
 

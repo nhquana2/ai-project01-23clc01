@@ -2,40 +2,10 @@ from dataclasses import dataclass
 from solvers.base import Solver, Node 
 from definition.board import Board
 from typing import Tuple, List, Dict, Optional
-import time
 import heapq
-import tracemalloc
 
 class UCSSolver(Solver):
-    def solve(self, initial: Board) -> Tuple[List[Tuple[int, int]], Dict]:
-        metrics = {
-            "search_time": 0.0,
-            "nodes_expanded": 0,
-            "memory_usage": 0.0,
-            "path_cost": 0
-        }
-
-        
-        start_time = time.time()
-        tracemalloc.start()
-
-        solution_node, nodes_expanded = self._ucs(initial)
-
-        _, peak = tracemalloc.get_traced_memory()
-        metrics["memory_usage"] = peak / 1024 #kb 
-        tracemalloc.stop()
-
-        metrics["search_time"] = time.time() - start_time
-        metrics["nodes_expanded"] = nodes_expanded
-        metrics["path_cost"] = solution_node.path_cost if solution_node else 0
-
-
-        if solution_node is None:
-            return [], metrics 
-        
-        return self._get_path(solution_node), metrics
-    
-    def _ucs(self, initial: Board) -> Tuple[Optional[Node], int]:
+    def _search(self, initial: Board) -> Tuple[Optional[Node], int]:
 
         start_node = Node(parent=None, state=initial, action=None, path_cost=0)
         if initial.is_goal():
