@@ -63,88 +63,23 @@ class Controller:
         self.reset_requested = False
 
     def _show_solving_notification(self):
-        """Display solving notification with animation while solver is working"""
-        import threading
-        import queue
-        
-        # Setup solving screen
-        solving_start_time = pygame.time.get_ticks()
+        """Display static solving notification"""
         algorithm_name = self.solver.__class__.__name__.replace('Solver', '')
         
-        # Create queue for solver result
-        result_queue = queue.Queue()
-        solving_finished = threading.Event()
+        # Draw static solving screen
+        self.screen.blit(self.background, (0, 0))
         
-        def solver_thread():
-            try:
-                solution, metrics = self.solver.solve(self.board)
-                result_queue.put(('success', solution, metrics))
-            except Exception as e:
-                result_queue.put(('error', str(e), None))
-            finally:
-                solving_finished.set()
+        # Static notification text
+        draw_text(self.screen, "SOLVING...", (990, 300), font_size=48, color=(0, 128, 255))
+        draw_text(self.screen, f"Algorithm: {algorithm_name}", (990, 350), font_size=32, color=(0, 0, 0))
         
-        # Start solver in background thread
-        solver_thread_obj = threading.Thread(target=solver_thread)
-        solver_thread_obj.start()
+        # Draw the board being solved
+        AnimatedBoardDrawer(self.board, self.vehicles_images).draw(self.screen)
         
-        # Show solving animation until done
-        while not solving_finished.is_set():
-            current_time = pygame.time.get_ticks()
-            elapsed = current_time - solving_start_time
-            
-            # Handle events to prevent window freezing
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    # Force quit if user closes window
-                    pygame.quit()
-                    exit()
-            
-            # Draw solving screen
-            self.screen.blit(self.background, (0, 0))
-            
-            # Animated dots for solving effect
-            dot_count = (elapsed // 500) % 4  # Change every 500ms, cycle through 0-3 dots
-            dots = "." * dot_count
-            
-            # draw notification on screen
-            draw_text(self.screen, f"SOLVING{dots}", (990, 300), font_size=48, color=(0, 128, 255))
-            draw_text(self.screen, f"Algorithm: {algorithm_name}", (990, 350), font_size=32, color=(0, 0, 0))
-            draw_text(self.screen, f"Elapsed: {elapsed / 1000:.1f}s", (990, 390), font_size=24, color=(128, 128, 128))
-            
-            # Draw the board being solved
-            AnimatedBoardDrawer(self.board, self.vehicles_images).draw(self.screen)
-            
-            pygame.display.flip()
-            self.clock.tick(30)
+        pygame.display.flip()
         
-        # Get the result and store it for later use
-        try:
-            result_type, result_data, result_metrics = result_queue.get_nowait()
-            if result_type == 'success':
-                self._cached_solution = result_data
-                self._cached_metrics = result_metrics
-            else:
-                # Handle error - return empty solution
-                self._cached_solution = []
-                self._cached_metrics = {
-                    "search_time": 0.0,
-                    "nodes_expanded": 0,
-                    "memory_usage": 0.0,
-                    "path_cost": 0
-                }
-        except queue.Empty:
-            # Fallback in case of threading issues
-            self._cached_solution = []
-            self._cached_metrics = {
-                "search_time": 0.0,
-                "nodes_expanded": 0,
-                "memory_usage": 0.0,
-                "path_cost": 0
-            }
-        
-        # Wait for thread to finish
-        solver_thread_obj.join()
+        # Solution return
+        self._cached_solution, self._cached_metrics = self.solver.solve(self.board)
 
     def draw_static_ui(self):
         self.screen.blit(self.background, (0, 0))
