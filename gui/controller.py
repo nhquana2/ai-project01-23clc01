@@ -221,7 +221,7 @@ class Controller:
                 AnimatedBoardDrawer(self.states[-1], self.vehicles_images).draw(self.screen)
                 draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
                 draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
-                draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0,0,0))
+                draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']:.4f} KB", (990, 300), font_size=30, color=(0,0,0))
                 draw_text(self.screen, "PUZZLE SOLVED!", (990, 150), font_size=32, color=(0, 128, 0))
                 pygame.display.flip()
                 

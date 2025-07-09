@@ -8,7 +8,7 @@ class DFSSolver(Solver):
     def __init__(self):
         super().__init__()
         # Increase recursion limit
-        sys.setrecursionlimit(10000)
+        sys.setrecursionlimit(500000)
 
     def _search(self, initial: Board) -> Tuple[Optional[Node], int]:
         """DFS implementation using recursion"""
