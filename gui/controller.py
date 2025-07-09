@@ -107,10 +107,10 @@ class Controller:
             dot_count = (elapsed // 500) % 4  # Change every 500ms, cycle through 0-3 dots
             dots = "." * dot_count
             
-            # Center the text on screen
-            draw_text(self.screen, f"SOLVING{dots}", (640, 300), font_size=48, color=(0, 128, 255))
-            draw_text(self.screen, f"Algorithm: {algorithm_name}", (640, 350), font_size=32, color=(0, 0, 0))
-            draw_text(self.screen, f"Elapsed: {elapsed / 1000:.1f}s", (640, 390), font_size=24, color=(128, 128, 128))
+            # draw notification on screen
+            draw_text(self.screen, f"SOLVING{dots}", (990, 300), font_size=48, color=(0, 128, 255))
+            draw_text(self.screen, f"Algorithm: {algorithm_name}", (990, 350), font_size=32, color=(0, 0, 0))
+            draw_text(self.screen, f"Elapsed: {elapsed / 1000:.1f}s", (990, 390), font_size=24, color=(128, 128, 128))
             
             # Draw the board being solved
             AnimatedBoardDrawer(self.board, self.vehicles_images).draw(self.screen)
@@ -157,7 +157,7 @@ class Controller:
 
         # Notify user when the current map is unsolveable
         if getattr(self, 'unsolveable', False):
-            draw_text(self.screen, "MAP IS UNSOLVEABLE!", (990, 150), font_size=32, color=(255, 0, 0))
+            draw_text(self.screen, "MAP IS UNSOLVEABLE!", (990, 250), font_size=32, color=(255, 0, 0))
         
         # Draw control buttons - hide play/pause when finished
         if not self.finished:
@@ -203,9 +203,9 @@ class Controller:
             while not self.return_to_menu:
                 self.draw_static_ui()
                 AnimatedBoardDrawer(self.states[0], self.vehicles_images).draw(self.screen)
-                draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0, 0, 0))
-                draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0, 0, 0))
-                draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0, 0, 0))
+                # draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0, 0, 0))
+                # draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0, 0, 0))
+                # draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0, 0, 0))
                 pygame.display.flip()
 
                 for event in pygame.event.get():
