@@ -28,7 +28,7 @@ def simple_heuristic(state: Board) -> int:
     # Each blocking vehicle's cost is its length
     # Add this to the direct distance the red car needs to move
     # print(f"blocking_cost in h: {blocking_cost}")
-    return direct_distance + blocking_cost
+    return 2*direct_distance + blocking_cost
 
 def custom_heuristic(state: Board) -> int:
     # --- Direct distance component ---------------------------------------

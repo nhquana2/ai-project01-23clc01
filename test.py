@@ -18,36 +18,39 @@ import csv
 from typing import List
 
 def main():
-       # Load map5
-    map_name = "map11.json"
-    full_map_path = f"maps/{map_name}"
-    print(f"Loading {full_map_path}...")
-    board = load_map(full_map_path)
+    #    # Load map5
+    # map_name = "map11.json"
+    # full_map_path = f"maps/{map_name}"
+    # print(f"Loading {full_map_path}...")
+    # board = load_map(full_map_path)
 
-    # Print the board state using display_state
-    print("Initial board state for map5:")
-    board.display_state()
+    # # Print the board state using display_state
+    # print("Initial board state for map5:")
+    # board.display_state()
 
-    # Choose a solver (example: A* with advanced_heuristic)
-    solver = AStarSolver(heuristic=advanced_heuristic)
-    solution, metrics = solver.solve(board)
+    # # Choose a solver (example: A* with advanced_heuristic)
+    # solver = AStarSolver(heuristic=advanced_heuristic)
+    # solution, metrics = solver.solve(board)
 
-    # Print the length of the solution
-    print(f"Length of solution: {len(solution) if solution is not None else 0}")
+    # # Print the length of the solution
+    # print(f"Length of solution: {len(solution) if solution is not None else 0}")
 
-    print("Solution metrics:")
-    for key, value in metrics.items():
-        print(f"{key}: {value}")
+    # print("Solution metrics:")
+    # for key, value in metrics.items():
+    #     print(f"{key}: {value}")
    
    
    
-    """
+    
     maps: List[Board] = []
     map_names: List[str] = [] 
 
    
-    for i in range(1, 11):
-        map_name = f"map{i}.json"
+    for i in range(1, 15):
+        if i < 10:
+            map_name = f"map0{i}.json"
+        else:   
+            map_name = f"map{i}.json"
         full_map_path = f"maps/{map_name}" 
         print(f"Loading {full_map_path}...")
         maps.append(load_map(full_map_path))
@@ -58,11 +61,11 @@ def main():
         # {"name": "BFS", "instance": BFSSolver()},
         # {"name": "DFS", "instance": DFSSolver()},
         # {"name": "UCS", "instance": UCSSolver()},
-        {"name": "A*", "instance": AStarSolver(heuristic=advanced_heuristic)}
+        {"name": "A*", "instance": AStarSolver(heuristic=simple_heuristic)}
     ]
 
     
-    csv_file_path = "custom_h1.csv"
+    csv_file_path = "rs_astart.csv"
     fieldnames = ['map_name','solver_name','solution_length','search_time_sec','nodes_expanded', 'path_cost', 'memory_usage_kb']
 
     with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
@@ -95,7 +98,7 @@ def main():
                 csvfile.flush() 
 
     print(f"Results saved to {csv_file_path}")
-"""
+
 
 if __name__ == "__main__":
     main()
