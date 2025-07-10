@@ -25,19 +25,16 @@ class Controller:
         self.exit_button = exit_button
         self.clock = pygame.time.Clock()
         
-        # Show solving notification
+        # Solving screen while waiting for the solver to return the solution
         self._show_solving_notification()
         
-        # Use cached results from solving notification
-        self.solution, self.metrics = self._cached_solution, self._cached_metrics
         self.states = [board]
         for move in self.solution:
             self.states.append(self.states[-1].apply_move(*move))
         self.current_step = 0
         self.total_steps = len(self.solution)
         self.current_cost = 0
-        # Detect unsolveable map (no moves returned by solver)
-        self.unsolveable = self.total_steps == 0
+        self.unsolvable = self.total_steps == 0 and self.metrics['nodes_expanded'] != 0 # Detect unsolvable map
         
         # Game control buttons
         self.play_pause_button = Button(
@@ -56,7 +53,7 @@ class Controller:
             (990, 560)
         )
         
-        # Game state
+        # Game states
         self.paused = False
         self.finished = False
         self.return_to_menu = False
@@ -79,7 +76,8 @@ class Controller:
         pygame.display.flip()
         
         # Solution return
-        self._cached_solution, self._cached_metrics = self.solver.solve(self.board)
+        self.solution, self.metrics = self.solver.solve(self.board)
+
 
     def draw_static_ui(self):
         self.screen.blit(self.background, (0, 0))
@@ -89,20 +87,22 @@ class Controller:
         # Draw "PAUSED" when paused
         if self.paused:
             draw_text(self.screen, "PAUSED", (990, 150), font_size=32, color=(255, 0, 0))
-
-        # Notify user when the current map is unsolveable
-        if getattr(self, 'unsolveable', False):
-            draw_text(self.screen, "MAP IS UNSOLVEABLE!", (990, 250), font_size=32, color=(255, 0, 0))
         
         # Draw control buttons - hide play/pause when finished
         if not self.finished:
             self.play_pause_button.draw(self.screen)
         
-        self.reset_button.draw(self.screen)
+        if not self.unsolvable:
+            self.reset_button.draw(self.screen)
         
         # Only show back to menu when paused or finished
         if self.paused or self.finished:
             self.back_to_menu_button.draw(self.screen)
+
+    def draw_metrics(self):
+        draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
+        draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
+        draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']:.4f} KB", (990, 300), font_size=30, color=(0,0,0))
 
     def handle_button_events(self, event):
         """Handle button click events"""
@@ -110,9 +110,8 @@ class Controller:
         if not self.finished and self.play_pause_button.handle_event(event):
             self.paused = not self.paused
             self.play_pause_button.text = "PLAY" if self.paused else "PAUSE"
-            return True
             
-        if self.reset_button.handle_event(event):
+        if not self.unsolvable and self.reset_button.handle_event(event):
             # Reset game to initial state
             self.current_step = 0
             self.current_cost = 0
@@ -120,27 +119,22 @@ class Controller:
             self.finished = False
             self.play_pause_button.text = "PLAY"
             self.reset_requested = True  # Flag to indicate reset was requested
-            return True
             
         if (self.paused or self.finished) and self.back_to_menu_button.handle_event(event):
             self.return_to_menu = True
-            return True
-            
-        return False
 
     def run(self):
         i = 1
 
-        # Early exit if the map is unsolveable – show notification and wait for the user to return to menu
-        if self.unsolveable:
+        # Early exit if the map is unsolvable – show notification and wait for the user to return to menu
+        if self.unsolvable:
             # Treat as finished so Back-to-Menu button is available
             self.finished = True
             while not self.return_to_menu:
                 self.draw_static_ui()
                 AnimatedBoardDrawer(self.states[0], self.vehicles_images).draw(self.screen)
-                # draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0, 0, 0))
-                # draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0, 0, 0))
-                # draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0, 0, 0))
+                self.draw_metrics()
+                draw_text(self.screen, "MAP IS UNSOLVABLE!", (990, 150), font_size=32, color=(255, 0, 0))
                 pygame.display.flip()
 
                 for event in pygame.event.get():
@@ -154,11 +148,10 @@ class Controller:
 
         # Main animation/step loop
         while True:
-            # return to menu condition
             if self.return_to_menu:
                 return
 
-            if self.reset_requested:  # if reset_button was pressed
+            if self.reset_requested:
                 i = 1
                 self.reset_requested = False
                 # Draw initial state
@@ -169,7 +162,6 @@ class Controller:
                 
             if i >= len(self.states):
                 self.finished = True
-
                 break
                 
             prev_board = self.states[i-1]
@@ -179,11 +171,9 @@ class Controller:
             vehicle = prev_board.vehicles[vehicle_id]
             
             if vehicle.orientation == 'H':
-                dx = direction * 96
-                dy = 0
+                dx, dy = direction * 96, 0
             else:
-                dx = 0
-                dy = direction * 96
+                dx, dy = 0, direction * 96
                 
             if self.speed == 1:      # Slow
                 steps = 24
@@ -200,9 +190,10 @@ class Controller:
                 offset[0] += px_per_frame[0]
                 offset[1] += px_per_frame[1]
                 
-                self.draw_static_ui()  # Draw background and static UI
+                self.draw_static_ui() 
                 AnimatedBoardDrawer(prev_board, self.vehicles_images, anim_vehicle=vehicle_id, anim_offset=tuple(offset)).draw(self.screen)
-                pygame.display.flip() # Update the display
+                
+                pygame.display.flip() 
                 
                 # Handle events
                 for event in pygame.event.get():
@@ -228,7 +219,7 @@ class Controller:
                         return
                     
                     # Check if reset was pressed - break out of animation
-                    if hasattr(self, 'reset_requested') and self.reset_requested:
+                    if self.reset_requested:
                         break
                         
                     self.clock.tick(10)
@@ -237,11 +228,7 @@ class Controller:
                 if self.reset_requested:
                     break
                     
-                # Check if menu button was pressed
-                if self.return_to_menu:
-                    return
-                    
-            # If reset was requested, don't update step and cost, restart loop
+            # If reset was requested, don't update step and cost, go back to while loop to reset
             if self.reset_requested:
                 continue
                 
@@ -254,13 +241,6 @@ class Controller:
                 
             # Move to next step
             i += 1
-                
-            # Draw the final state and metrics after moving
-            # self.draw_static_ui()
-            # AnimatedBoardDrawer(next_board, self.vehicles_images).draw(self.screen)
-            # draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
-            # draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
-            # draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']} KB", (990, 300), font_size=30, color=(0,0,0))
 
         pygame.display.flip()
         pygame.time.delay(100)
@@ -270,9 +250,7 @@ class Controller:
             if self.finished:
                 self.draw_static_ui()
                 AnimatedBoardDrawer(self.states[-1], self.vehicles_images).draw(self.screen)
-                draw_text(self.screen, f"Search Time: {self.metrics['search_time']:.6f} s", (990, 200), font_size=30, color=(0,0,0))
-                draw_text(self.screen, f"Nodes Expanded: {self.metrics['nodes_expanded']}", (990, 250), font_size=30, color=(0,0,0))
-                draw_text(self.screen, f"Memory Usage: {self.metrics['memory_usage']:.4f} KB", (990, 300), font_size=30, color=(0,0,0))
+                self.draw_metrics()
                 draw_text(self.screen, "PUZZLE SOLVED!", (990, 150), font_size=32, color=(0, 128, 0))
                 pygame.display.flip()
                 
