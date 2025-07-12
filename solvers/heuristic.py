@@ -27,8 +27,10 @@ def simple_heuristic(state: Board) -> int:
             
     # Each blocking vehicle's cost is its length
     # Add this to the direct distance the red car needs to move
-    # print(f"blocking_cost in h: {blocking_cost}")
+
     return 2*direct_distance + blocking_cost
+
+# ======= BELOW ARE THE HEURISTICS IMPLEMENTED OPTIONALLY, WE FOCUS ON THE simple_heuristic ABOVE =======
 
 def custom_heuristic(state: Board) -> int:
     # --- Direct distance component ---------------------------------------
@@ -64,7 +66,7 @@ def custom_heuristic(state: Board) -> int:
                         blocking_cost += state.vehicles[state.occupied[head_blocker - 1][col]].length
             else:
                 return 0
-    return direct_distance + blocking_cost 
+    return 2*direct_distance + blocking_cost 
 
 def advanced_heuristic(state: Board) -> int:
     """
@@ -129,7 +131,7 @@ def advanced_heuristic(state: Board) -> int:
             else:
                 return 0
             
-    return direct_distance + blocking_cost
+    return 2*direct_distance + blocking_cost
 
 def count_blocking_recursively(state: Board, vehicle_id: int, visited: set) -> int:
     """
@@ -234,6 +236,5 @@ def recursive_blocking_heuristic(state: Board) -> int:
             blocking_chain_cost = count_blocking_recursively(state, blocker_id, global_visited)
             total_blocking_cost += blocking_chain_cost
     
-    # print(f"total_blocking_cost in h2: {total_blocking_cost}")
     # Total heuristic: direct distance + total cost of vehicles that need to move
-    return direct_distance + total_blocking_cost 
+    return 2*direct_distance + total_blocking_cost 
