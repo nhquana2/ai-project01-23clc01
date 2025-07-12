@@ -58,14 +58,14 @@ def main():
 
     
     solvers = [
-        # {"name": "BFS", "instance": BFSSolver()},
+        {"name": "BFS", "instance": BFSSolver()},
         # {"name": "DFS", "instance": DFSSolver()},
-        # {"name": "UCS", "instance": UCSSolver()},
+        {"name": "UCS", "instance": UCSSolver()},
         {"name": "A*", "instance": AStarSolver(heuristic=simple_heuristic)}
     ]
 
     
-    csv_file_path = "rs_astart.csv"
+    csv_file_path = "rs.csv"
     fieldnames = ['map_name','solver_name','solution_length','search_time_sec','nodes_expanded', 'path_cost', 'memory_usage_kb']
 
     with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
