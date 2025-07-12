@@ -185,17 +185,10 @@ class Controller:
             px_per_frame = (dx // steps, dy // steps)
             offset = [0, 0]
             
+            
             for step in range(steps):
-                self.clock.tick(30 * int(self.speed))  # Control animation speed
-                offset[0] += px_per_frame[0]
-                offset[1] += px_per_frame[1]
-                
-                self.draw_static_ui() 
-                AnimatedBoardDrawer(prev_board, self.vehicles_images, anim_vehicle=vehicle_id, anim_offset=tuple(offset)).draw(self.screen)
-                
-                pygame.display.flip() 
-                
-                # Handle events
+
+                 # Handle events
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
@@ -227,6 +220,16 @@ class Controller:
                 # Check if reset was pressed during animation
                 if self.reset_requested:
                     break
+                self.clock.tick(30 * int(self.speed))  # Control animation speed
+                offset[0] += px_per_frame[0]
+                offset[1] += px_per_frame[1]
+                
+                self.draw_static_ui() 
+                AnimatedBoardDrawer(prev_board, self.vehicles_images, anim_vehicle=vehicle_id, anim_offset=tuple(offset)).draw(self.screen)
+                
+                pygame.display.flip() 
+                
+               
                     
             # If reset was requested, don't update step and cost, go back to while loop to reset
             if self.reset_requested:
