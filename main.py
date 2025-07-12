@@ -24,7 +24,7 @@ CONFIG = {
         "A*": AStarSolver(),
     },
     "maps_dir": Path("maps"),
-    "map_names": [f.name for f in Path("maps").glob("*.json")],
+    "map_names": sorted([f.name for f in Path("maps").glob("*.json")]),
     "speeds": {
         "Slow": 1,
         "Medium": 2,
