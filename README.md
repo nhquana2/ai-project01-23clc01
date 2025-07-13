@@ -59,7 +59,6 @@ The board is a 6×6 grid with the exit on the right edge of row 2.
    ```bash
    conda create -n rush_hour python==3.10
    conda activate rush_hour
-   select rush_hour interpreter
    ```
 
 3. Install dependencies:
