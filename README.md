@@ -43,7 +43,7 @@ The board is a 6×6 grid with the exit on the right edge of row 2.
 
 ## Installation & Running
 
-> Requires **Python ≥ 3.9**
+> Requires **Python ≥ 3.10**
 
 1. Clone the repository:
    ```bash
@@ -57,7 +57,7 @@ The board is a 6×6 grid with the exit on the right edge of row 2.
    ```
 
    ```bash
-   conda create -n rush_hour python==3.9
+   conda create -n rush_hour python==3.10
    conda activate rush_hour
    select rush_hour interpreter
    ```
